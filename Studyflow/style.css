@@ -1,0 +1,181 @@
+/* CONFIGURAÇÕES GERAIS e CORES (VARIÁVEIS) */
+:root {
+    --bg-main: #121214;
+    --bg-sidebar: #1a1a1e;
+    --bg-card: #202024;
+    --color-primary: #4e73df;
+    --text-main: #ffffff;
+    --text-muted: #8d8d99;
+    
+    /* Cores das Matérias do seu protótipo */
+    --tag-biologia: #3b5998;
+    --tag-matematica: #1e7e34;
+    --tag-historia: #bd2130;
+    --tag-quimica: #e0a800;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* LAYOUT EM GRID */
+.app-container {
+    display: flex;
+    height: 100vh;
+}
+
+/* BARRA LATERAL */
+.sidebar {
+    width: 240 bounds;
+    min-width: 240px;
+    background-color: var(--bg-sidebar);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    border-right: 1px solid #29292e;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.menu a:hover, .menu a.active {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+}
+
+.menu a.active {
+    border-left: 4px solid var(--color-primary);
+}
+
+/* CONTEÚDO PRINCIPAL */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* TOPO / HEADER */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-area h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.date-range {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* TABELA DE HORÁRIOS */
+.schedule-section {
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #29292e;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 10px; /* Dá o efeito de espaçamento entre os cards do Figma */
+}
+
+.schedule-table th {
+    color: var(--text-muted);
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.schedule-table td {
+    background-color: #29292e;
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+    min-width: 140px;
+    height: 90px;
+    vertical-align: middle;
+}
+
+/* Classes utilitárias para estilizar os blocos de matéria */
+.materia-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.materia-nome {
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+
+.materia-detalhes {
+    font-size: 0.8rem;
+    color: #c4c4cc;
+}
+
+/* Cores das disciplinas combinando com o Figma */
+.biologia { border-left: 5px solid var(--tag-biologia); }
+.matematica { border-left: 5px solid var(--tag-matematica); }
+.historia { border-left: 5px solid var(--tag-historia); }
+.quimica { border-left: 5px solid var(--tag-quimica); }
+.vazio { background-color: transparent !important; border: 1px dashed #323238; color: var(--text-muted); }

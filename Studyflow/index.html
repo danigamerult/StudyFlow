@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyFlow Mobile</title>
+    <!-- FontAwesome para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ARQUITETURA DE CORES (DESIGN SYSTEM) --- */
+        :root {
+            --bg-pure: #0b0c0e;
+            --bg-base: #121418;
+            --bg-card: #1c1f26;
+            --bg-input: #17191d;
+            --color-primary: #3b82f6;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #2d3139;
+            
+            /* Cores das disciplinas */
+            --sub-biologia: #2563eb;
+            --sub-matematica: #16a34a;
+            --sub-historia: #ea580c;
+            --sub-quimica: #db2777;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-pure);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 75px; /* Espaço para a bottom nav */
+        }
+
+        /* --- HEADER MOBILE --- */
+        header {
+            background-color: var(--bg-base);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand-area {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .brand-area h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .brand-area p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--bg-card);
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .profile-class {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* --- CONTAINER DE CONTEÚDO --- */
+        .content-container {
+            padding: 1rem;
+            flex: 1;
+        }
+
+        .app-view {
+            display: none;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: slideUp 0.25s ease-out;
+        }
+
+        .app-view.active-view {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* --- VISÃO 1: CRONOGRAMA MOBILE (TABS DE DIAS) --- */
+        .day-selector {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-base);
+            padding: 0.35rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .day-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .day-btn.active-day {
+            background-color: var(--color-primary);
+            color: var(--text-main);
+        }
+
+        .timeline {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .timeline.active-timeline {
+            display: flex;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 85px 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .time-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            background-color: var(--bg-base);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .class-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            border-left: 4px solid transparent;
+        }
+
+        .class-card.bio { border-left-color: var(--sub-biologia); }
+        .class-card.mat { border-left-color: var(--sub-matematica); }
+        .class-card.hist { border-left-color: var(--sub-historia); }
+        .class-card.qui { border-left-color: var(--sub-quimica); }
+
+        .class-card.empty {
+            border-left-color: var(--text-muted);
+            opacity: 0.5;
+            background: rgba(28, 31, 38, 0.4);
+        }
+
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .class-title { font-weight: 600; font-size: 0.95rem; }
+        .room-tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--color-primary);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        .class-card.mat .room-tag { background: rgba(22, 163, 74, 0.1); color: var(--color-success); }
+        .class-card.hist .room-tag { background: rgba(234, 88, 12, 0.1); color: var(--sub-historia); }
+        .class-card.qui .room-tag { background: rgba(219, 39, 119, 0.1); color: var(--sub-quimica); }
+
+        .class-details { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* --- VISÃO 2: PROVAS UNIFICADAS MOBILE --- */
+        .exam-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .exam-mobile-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exam-mobile-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+        }
+        .exam-mobile-card.mat::before { background-color: var(--sub-matematica); }
+        .exam-mobile-card.qui::before { background-color: var(--sub-quimica); }
+        .exam-mobile-card.bio::before { background-color: var(--sub-biologia); }
+
+        .exam-m-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .exam-m-title { font-size: 1rem; font-weight: 700; }
+        .exam-m-type { font-size: 0.75rem; color: var(--text-muted); }
+        .exam-m-date {
+            font-size: 0.75rem;
+            color: var(--color-warning);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .topics-m-list {
+            list-style: none;
+            background: var(--bg-base);
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .topics-m-list li {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topics-m-list li i { color: var(--color-success); font-size: 0.7rem; }
+
+        /* --- VISÃO 3: MURAL DE AVISOS MOBILE --- */
+        .notice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notice-mobile-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--color-primary);
+            padding: 1rem;
+            border-radius: 4px 12px 12px 4px;
+        }
+
+        .notice-mobile-item.success { border-left-color: var(--color-success); }
+
+        .notice-mobile-item h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+        .notice-mobile-item p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* --- BOTTOM NAVIGATION BAR FIXA --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 65px;
+            background-color: var(--bg-base);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom); /* Suporte para notch do iPhone */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 33.33%;
+            height: 100%;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item span { font-size: 0.7rem; font-weight: 500; }
+
+        .nav-item.active-nav {
+            color: var(--color-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER DO APP -->
+    <header>
+        <div class="brand-area">
+            <h1 id="header-title">Cronograma</h1>
+            <p id="header-subtitle">Salas e horários das disciplinas</p>
+        </div>
+        <div class="profile-badge">
+            <div class="profile-avatar">DV</div>
+            <span class="profile-class">3DS</span>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="content-container">
+
+        <!-- ABA 1: CRONOGRAMA -->
+        <div id="view-cronograma" class="app-view active-view">
+            <!-- Seletor de Dias Adaptado para Dedos -->
+            <div class="day-selector">
+                <button class="day-btn active-day" onclick="switchDay('seg')">Seg</button>
+                <button class="day-btn" onclick="switchDay('ter')">Ter</button>
+                <button class="day-btn" onclick="switchDay('qua')">Qua</button>
+                <button class="day-btn" onclick="switchDay('qui')">Qui</button>
+                <button class="day-btn" onclick="switchDay('sex')">Sex</button>
+            </div>
+
+            <div class="panel-title">Aulas do Dia</div>
+
+            <!-- TIMELINE SEGUNDA -->
+            <div id="timeline-seg" class="timeline active-timeline">
+                <div class="timeline-item">
+                    <div class="time-badge">13:00 - 14:15</div>
+                    <div class="class-card bio">
+                        <div class="class-header">
+                            <span class="class-title">Biologia</span>
+                            <span class="room-tag">Lab 04</span>
+                        </div>
+                        <div class="class-details">Prédio B</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time-badge">14:15 - 15:30</div>
+                    <div class="class-card bio">
+                        <div class="class-header">
+                            <span class="class-title">Biologia Molecular</span>
+                            <span class="room-tag">Lab 02</span>
+                        </div>
+                        <div class="class-details">Prédio B</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE TERÇA -->
+            <div id="timeline-ter" class="timeline">
+                <div class="timeline-item">
+                    <div class="time-badge">13:00 - 14:15</div>
+                    <div class="class-card empty">
+                        <div class="class-header"><span class="class-title">Sem aula</span></div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time-badge">14:15 - 15:30</div>
+                    <div class="class-card mat">
+                        <div class="class-header">
+                            <span class="class-title">Matemática</span>
+                            <span class="room-tag">Sala 102</span>
+                        </div>
+                        <div class="class-details">Bloco C</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE QUARTA -->
+            <div id="timeline-qua" class="timeline">
+                <div class="timeline-item">
+                    <div class="time-badge">13:00 - 14:15</div>
+                    <div class="class-card mat">
+                        <div class="class-header">
+                            <span class="class-title">Matemática</span>
+                            <span class="room-tag">Sala 102</span>
+                        </div>
+                        <div class="class-details">Bloco C</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time-badge">14:15 - 15:30</div>
+                    <div class="class-card hist">
+                        <div class="class-header">
+                            <span class="class-title">História</span>
+                            <span class="room-tag">Sala 205</span>
+                        </div>
+                        <div class="class-details">Bloco A</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE QUINTA -->
+            <div id="timeline-qui" class="timeline">
+                <div class="timeline-item">
+                    <div class="time-badge">13:00 - 14:15</div>
+                    <div class="class-card mat">
+                        <div class="class-header">
+                            <span class="class-title">Matemática</span>
+                            <span class="room-tag">Sala 102</span>
+                        </div>
+                        <div class="class-details">Bloco C</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time-badge">14:15 - 15:30</div>
+                    <div class="class-card hist">
+                        <div class="class-header">
+                            <span class="class-title">História</span>
+                            <span class="room-tag">Sala 205</span>
+                        </div>
+                        <div class="class-details">Bloco A</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIMELINE SEXTA -->
+            <div id="timeline-sex" class="timeline">
+                <div class="timeline-item">
+                    <div class="time-badge">13:00 - 14:15</div>
+                    <div class="class-card empty">
+                        <div class="class-header"><span class="class-title">Sem aula</span></div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="time-badge">14:15 - 15:30</div>
+                    <div class="class-card qui">
+                        <div class="class-header">
+                            <span class="class-title">Química</span>
+                            <span class="room-tag">Lab 01</span>
+                        </div>
+                        <div class="class-details">Prédio B</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ABA 2: PROVAS UNIFICADAS -->
+        <div id="view-avaliacoes" class="app-view">
+            <div class="panel-title">Próximas Avaliações</div>
+            <div class="exam-list">
+                
+                <!-- PROVA 1 -->
+                <div class="exam-mobile-card mat">
+                    <div class="exam-m-header">
+                        <div>
+                            <div class="exam-m-title">Cálculo & Álgebra</div>
+                            <div class="exam-m-type">Avaliação Unificada Integrada</div>
+                        </div>
+                        <span class="exam-m-date">24 Jun 2026</span>
+                    </div>
+                    <ul class="topics-m-list">
+                        <li><i class="fa-solid fa-circle-check"></i> Análise de Gráficos de Funções</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Probabilidade Condicional</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Matrizes e Sistemas Lineares</li>
+                    </ul>
+                </div>
+
+                <!-- PROVA 2 -->
+                <div class="exam-mobile-card qui">
+                    <div class="exam-m-header">
+                        <div>
+                            <div class="exam-m-title">Química Orgânica</div>
+                            <div class="exam-m-type">Avaliação Unificada Bimestral</div>
+                        </div>
+                        <span class="exam-m-date">26 Jun 2026</span>
+                    </div>
+                    <ul class="topics-m-list">
+                        <li><i class="fa-solid fa-circle-check"></i> Cadeias Carbônicas e Hibridização</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Funções Oxigenadas e Nitrogenadas</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Reações de Oxirredução</li>
+                    </ul>
+                </div>
+
+                <!-- PROVA 3 -->
+                <div class="exam-mobile-card bio">
+                    <div class="exam-m-header">
+                        <div>
+                            <div class="exam-m-title">Biologia Molecular</div>
+                            <div class="exam-m-type">Avaliação de Laboratório</div>
+                        </div>
+                        <span class="exam-m-date">29 Jun 2026</span>
+                    </div>
+                    <ul class="topics-m-list">
+                        <li><i class="fa-solid fa-circle-check"></i> Estrutura do DNA e Replicação</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Síntese Proteica e Transcrição</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Divisão Celular (Mitose/Meiose)</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ABA 3: AVISOS -->
+        <div id="view-avisos" class="app-view">
+            <div class="panel-title">Mural Geral</div>
+            <div class="notice-list">
+                <div class="notice-mobile-item">
+                    <h4>Alteração Excepcional na Grade de Sexta</h4>
+                    <p>A aula de Química de sexta-feira foi movida temporariamente do Laboratório 01 para a <b>Sala Alternativa V3</b> devido à manutenção dos equipamentos.</p>
+                </div>
+                <div class="notice-mobile-item success">
+                    <h4>Inscrições Abertas para o Simulado</h4>
+                    <p>Os interessados em participar do simulado unificado de preparação devem preencher a ficha cadastral no Portal do Aluno até o próximo fim de semana.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAVEGAÇÃO INFERIOR FIXA (BOTTOM NAV) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active-nav" onclick="navigate('cronograma', this)">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Cronograma</span>
+        </button>
+        <button class="nav-item" onclick="navigate('avaliacoes', this)">
+            <i class="fa-solid fa-file-signature"></i>
+            <span>Provas</span>
+        </button>
+        <button class="nav-item" onclick="navigate('avisos', this)">
+            <i class="fa-solid fa-bullhorn"></i>
+            <span>Avisos</span>
+        </button>
+    </nav>
+
+    <!-- SCRIPTS DE INTERAÇÃO -->
+    <script>
+        // Transição das telas principais (Bottom Nav)
+        function navigate(targetView, element) {
+            document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active-view'));
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active-nav'));
+
+            document.getElementById('view-' + targetView).classList.add('active-view');
+            element.classList.add('active-nav');
+
+            const title = document.getElementById('header-title');
+            const subtitle = document.getElementById('header-subtitle');
+
+            if(targetView === 'cronograma') {
+                title.textContent = "Cronograma";
+                subtitle.textContent = "Salas e horários das disciplinas";
+            } else if(targetView === 'avaliacoes') {
+                title.textContent = "Avaliações";
+                subtitle.textContent = "Conteúdos e datas de provas unificadas";
+            } else if(targetView === 'avisos') {
+                title.textContent = "Mural de Avisos";
+                subtitle.textContent = "Comunicados importantes da coordenação";
+            }
+        }
+
+        // Transição dos dias da semana (Sub-abas do cronograma)
+        function switchDay(day) {
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active-day'));
+            document.querySelectorAll('.timeline').forEach(timeline => timeline.classList.remove('active-timeline'));
+
+            event.target.classList.add('active-day');
+            document.getElementById('timeline-' + day).classList.add('active-timeline');
+        }
+    </script>
+</body>
+</html>
